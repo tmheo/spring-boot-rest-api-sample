@@ -1,0 +1,101 @@
+= Person REST API Guide
+Taemyung Heo;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP verbs
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+
+| `PATCH`
+| Used to update an existing resource, including partial updates
+
+| `DELETE`
+| Used to delete an existing resource
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| The request completed successfully
+
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
+
+| `204 No Content`
+| An update to an existing resource has been applied successfully
+
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
+
+| `404 Not Found`
+| The requested resource did not exist
+|===
+
+[[resources]]
+= Resources
+
+[[resources-person]]
+== Person
+
+The Person resources is used to create and get person
+
+[[resources-person-create]]
+=== Creating a person
+
+A `POST` request is used to create a person
+
+==== Request structure
+
+include::{snippets}/person-create-example/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/person-create-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/person-create-example/http-response.adoc[]
+
+[[resources-person-retrieve]]
+=== Retrieve a person
+
+A `GET` request will retrieve the details of a person
+
+==== Response structure
+
+include::{snippets}/person-get-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/person-get-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/person-get-example/http-response.adoc[]
