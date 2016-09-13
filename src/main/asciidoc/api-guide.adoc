@@ -71,9 +71,17 @@ The Person resources is used to create and get person
 
 A `POST` request is used to create a person
 
+==== Request Header structure
+
+include::{snippets}/person-create-example/request-headers.adoc[]
+
 ==== Request structure
 
 include::{snippets}/person-create-example/request-fields.adoc[]
+
+==== Response structure
+
+include::{snippets}/person-create-example/response-fields.adoc[]
 
 ==== Example request
 
@@ -87,6 +95,14 @@ include::{snippets}/person-create-example/http-response.adoc[]
 === Retrieve a person
 
 A `GET` request will retrieve the details of a person
+
+==== Request Header structure
+
+include::{snippets}/person-get-example/request-headers.adoc[]
+
+==== Request structure
+
+include::{snippets}/person-get-example/path-parameters.adoc[]
 
 ==== Response structure
 

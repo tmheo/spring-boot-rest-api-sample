@@ -9,10 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.constraints.ConstraintDescriptions;
+import org.springframework.restdocs.headers.HeaderDescriptor;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import tmheo.entity.Person;
 import tmheo.model.PersonRequest;
@@ -20,6 +24,8 @@ import tmheo.service.PersonService;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -27,6 +33,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +60,10 @@ public class ApiDocumentation {
 
     private MockMvc mockMvc;
 
+    private HeaderDescriptor[] commonHeaders = new HeaderDescriptor[]{
+            headerWithName("Authorization").description("OAuth2 JWT Token for authorization")
+    };
+
     @Before
     public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
@@ -69,9 +80,12 @@ public class ApiDocumentation {
         personRequest.setLastName("last name");
         personRequest.setEmail("test@test.com");
 
+        ConstrainedFields fields = new ConstrainedFields(PersonRequest.class);
+
         this.mockMvc.perform(
                 post("/api/person")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer your_oauth2_jwt_token")
                         .content(this.objectMapper.writeValueAsString(personRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id", is(notNullValue())))
@@ -79,15 +93,20 @@ public class ApiDocumentation {
                 .andExpect(jsonPath("lastName", is(personRequest.getLastName())))
                 .andExpect(jsonPath("email", is(personRequest.getEmail())))
                 .andDo(document("person-create-example",
-                        requestFields(
-                                fieldWithPath("firstName").description("The first name of the person"),
-                                fieldWithPath("lastName").description("The last name of the person"),
-                                fieldWithPath("email").description("The email of the person")),
-                        responseFields(
-                                fieldWithPath("id").description("The id of the person"),
-                                fieldWithPath("firstName").description("The first name of the person"),
-                                fieldWithPath("lastName").description("The last name of the person"),
-                                fieldWithPath("email").description("The email of the person"))));
+                                requestHeaders(commonHeaders),
+                                requestFields(
+                                        fields.withPath("firstName").description("The first name of the person"),
+                                        fields.withPath("lastName").description("The last name of the person"),
+                                        fields.withPath("email").description("The email of the person")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").description("The id of the person"),
+                                        fieldWithPath("firstName").description("The first name of the person"),
+                                        fieldWithPath("lastName").description("The last name of the person"),
+                                        fieldWithPath("email").description("The email of the person")
+                                )
+                        )
+                );
 
     }
 
@@ -103,21 +122,42 @@ public class ApiDocumentation {
 
         this.mockMvc.perform(
                 get("/api/person/{id}", person.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer your_oauth2_jwt_token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id", is(person.getId().intValue())))
                 .andExpect(jsonPath("firstName", is(person.getFirstName())))
                 .andExpect(jsonPath("lastName", is(person.getLastName())))
                 .andExpect(jsonPath("email", is(person.getEmail())))
                 .andDo(document("person-get-example",
-                        pathParameters(
-                                parameterWithName("id").description("The id of the person")),
-                        responseFields(
-                                fieldWithPath("id").description("The id of the person"),
-                                fieldWithPath("firstName").description("The first name of the person"),
-                                fieldWithPath("lastName").description("The last name of the person"),
-                                fieldWithPath("email").description("The email of the person"))));
+                                requestHeaders(commonHeaders),
+                                pathParameters(
+                                        parameterWithName("id").description("The id of the person")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").description("The id of the person"),
+                                        fieldWithPath("firstName").description("The first name of the person"),
+                                        fieldWithPath("lastName").description("The last name of the person"),
+                                        fieldWithPath("email").description("The email of the person")
+                                )
+                        )
+                );
 
+    }
+
+    private static class ConstrainedFields {
+
+        private final ConstraintDescriptions constraintDescriptions;
+
+        ConstrainedFields(Class<?> input) {
+            this.constraintDescriptions = new ConstraintDescriptions(input);
+        }
+
+        private FieldDescriptor withPath(String path) {
+            return fieldWithPath(path).attributes(key("constraints").value(StringUtils
+                    .collectionToDelimitedString(this.constraintDescriptions
+                            .descriptionsForProperty(path), ". ")));
+        }
     }
 
 }

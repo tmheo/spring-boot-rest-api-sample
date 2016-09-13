@@ -8,6 +8,7 @@ import tmheo.entity.Person;
 import tmheo.util.BeanUtils;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -19,9 +20,11 @@ import java.io.Serializable;
 public class PersonRequest implements Serializable {
 
     @NotNull
+    @Size(min = 1, max = 20)
     private String firstName;
 
     @NotNull
+    @Size(min = 1, max = 20)
     private String lastName;
 
     @Email
