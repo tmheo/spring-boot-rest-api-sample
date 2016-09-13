@@ -73,6 +73,27 @@ public class ApiDocumentation {
     }
 
     @Test
+    public void errorExample() throws Exception {
+
+        this.mockMvc.perform(
+                get("/api/person/123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer your_oauth2_jwt_token"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("error", is("resource not found error")))
+                .andExpect(jsonPath("error_description", is(notNullValue())))
+                .andDo(document("error-example",
+                                requestHeaders(commonHeaders),
+                                responseFields(
+                                        fieldWithPath("error").description("The HTTP error that occurred, e.g. `resource not found error`"),
+                                        fieldWithPath("error_description").description("A description of the cause of the error")
+                                )
+                        )
+                );
+
+    }
+
+    @Test
     public void personCreateExample() throws Exception {
 
         PersonRequest personRequest = new PersonRequest();
