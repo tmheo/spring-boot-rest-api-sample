@@ -67,8 +67,11 @@ public class ApiDocumentation {
     @Before
     public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
-                .apply(documentationConfiguration(this.restDocumentation))
-                .alwaysDo(print())
+                .apply(documentationConfiguration(this.restDocumentation).uris()
+                                .withScheme("https")
+                                .withHost("example.com")
+                                .withPort(443)
+                ).alwaysDo(print())
                 .build();
     }
 
