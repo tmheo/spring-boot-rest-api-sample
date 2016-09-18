@@ -21,7 +21,7 @@ public class PersonRepositoryImpl extends QueryDslRepositorySupport implements P
 
         return from(person)
                 .where(person.firstName.containsIgnoreCase(firstName))
-                .list(person);
+                .fetch();
     }
 
 }

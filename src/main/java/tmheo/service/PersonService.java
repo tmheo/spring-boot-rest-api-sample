@@ -2,6 +2,7 @@ package tmheo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tmheo.entity.Person;
@@ -47,4 +48,19 @@ public class PersonService {
 
     }
 
+    @Transactional
+    public void delete(Long id) {
+
+        log.debug("delete person request for id[{}]", id);
+
+        try {
+            personRepository.delete(id);
+        } catch (EmptyResultDataAccessException e) {
+            log.warn("person does not exist with id[{}]", id, e);
+            throw new ResourceNotFoundException(String.valueOf(id));
+        }
+
+        log.debug("delete person response for id[{}]");
+
+    }
 }

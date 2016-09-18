@@ -6,14 +6,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.headers.HeaderDescriptor;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
@@ -28,8 +27,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -42,8 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by taemyung on 2016. 9. 10..
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = DemoTestApplication.class)
-@WebAppConfiguration
+@SpringBootTest
 public class ApiDocumentation {
 
     @Rule
@@ -163,6 +160,79 @@ public class ApiDocumentation {
                                         fieldWithPath("firstName").description("The first name of the person"),
                                         fieldWithPath("lastName").description("The last name of the person"),
                                         fieldWithPath("email").description("The email of the person")
+                                )
+                        )
+                );
+
+    }
+
+    @Test
+    public void personUpdateExample() throws Exception {
+
+        Person person = new Person();
+        person.setFirstName("first name");
+        person.setLastName("last name");
+        person.setEmail("test@test.com");
+
+        person = personService.save(person);
+
+        PersonRequest personRequest = new PersonRequest();
+        personRequest.setFirstName("updated first name");
+        personRequest.setLastName("updated last name");
+        personRequest.setEmail("updated_test@test.com");
+
+        ConstrainedFields fields = new ConstrainedFields(PersonRequest.class);
+
+        this.mockMvc.perform(
+                put("/api/person/{id}", person.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer your_oauth2_jwt_token")
+                        .content(this.objectMapper.writeValueAsString(personRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id", is(person.getId().intValue())))
+                .andExpect(jsonPath("firstName", is(personRequest.getFirstName())))
+                .andExpect(jsonPath("lastName", is(personRequest.getLastName())))
+                .andExpect(jsonPath("email", is(personRequest.getEmail())))
+                .andDo(document("person-update-example",
+                                requestHeaders(commonHeaders),
+                                pathParameters(
+                                        parameterWithName("id").description("The id of the person")
+                                ),
+                                requestFields(
+                                        fields.withPath("firstName").description("The first name of the person"),
+                                        fields.withPath("lastName").description("The last name of the person"),
+                                        fields.withPath("email").description("The email of the person")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").description("The id of the person"),
+                                        fieldWithPath("firstName").description("The first name of the person"),
+                                        fieldWithPath("lastName").description("The last name of the person"),
+                                        fieldWithPath("email").description("The email of the person")
+                                )
+                        )
+                );
+
+    }
+
+    @Test
+    public void personDeleteExample() throws Exception {
+
+        Person person = new Person();
+        person.setFirstName("first name");
+        person.setLastName("last name");
+        person.setEmail("test@test.com");
+
+        person = personService.save(person);
+
+        this.mockMvc.perform(
+                delete("/api/person/{id}", person.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer your_oauth2_jwt_token"))
+                .andExpect(status().isNoContent())
+                .andDo(document("person-delete-example",
+                                requestHeaders(commonHeaders),
+                                pathParameters(
+                                        parameterWithName("id").description("The id of the person")
                                 )
                         )
                 );

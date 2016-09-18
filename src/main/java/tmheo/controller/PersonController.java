@@ -53,4 +53,34 @@ public class PersonController {
 
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<PersonResponse> update(@PathVariable("id") Long id, @RequestBody @Valid PersonRequest personRequest) {
+
+        log.debug("update person request for person for id[{}] : {}", id, personRequest);
+
+        Person person = personRequest.convertToPerson();
+        person.setId(id);
+
+        person = personService.save(person);
+
+        PersonResponse personResponse = new PersonResponse(person);
+
+        log.debug("update person response for person for id[{}] : {}", id, personResponse);
+
+        return new ResponseEntity<>(personResponse, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
+        log.debug("delete person request for id[{}]", id);
+
+        personService.delete(id);
+
+        log.debug("delete person response for id[{}] : {}", id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+    }
 }

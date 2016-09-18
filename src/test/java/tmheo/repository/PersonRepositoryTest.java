@@ -3,10 +3,8 @@ package tmheo.repository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import tmheo.DemoTestApplication;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import tmheo.entity.Person;
 
 import java.util.List;
@@ -18,9 +16,8 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by taemyung on 2016. 9. 10..
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = DemoTestApplication.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@DataJpaTest
 public class PersonRepositoryTest {
 
     @Autowired
