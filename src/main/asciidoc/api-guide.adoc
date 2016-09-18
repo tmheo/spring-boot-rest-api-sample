@@ -176,3 +176,28 @@ include::{snippets}/person-delete-example/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/person-delete-example/http-response.adoc[]
+
+[[resources-person-list-retrieve]]
+=== Retrieve person list
+
+A `GET` request will retrieve the list of person
+
+==== Request Header structure
+
+include::{snippets}/person-list-example/request-headers.adoc[]
+
+==== Request structure
+
+include::{snippets}/person-list-example/request-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/person-list-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/person-list-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/person-list-example/http-response.adoc[]

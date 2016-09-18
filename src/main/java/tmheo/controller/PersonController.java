@@ -2,10 +2,12 @@ package tmheo.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tmheo.entity.Person;
+import tmheo.model.PersonListResponse;
 import tmheo.model.PersonRequest;
 import tmheo.model.PersonResponse;
 import tmheo.service.PersonService;
@@ -83,4 +85,22 @@ public class PersonController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<PersonListResponse> list(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+
+        log.debug("list person request for page[{}], size[{}]", page, size);
+
+        Page<Person> personList = personService.list(page, size);
+
+        PersonListResponse personListResponse = new PersonListResponse(personList);
+
+        log.debug("list person response for page[{}], size[{}] : {}", page, size, personListResponse);
+
+        return new ResponseEntity<>(personListResponse, HttpStatus.OK);
+
+    }
+
 }

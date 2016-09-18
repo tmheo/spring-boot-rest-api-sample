@@ -3,6 +3,8 @@ package tmheo.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tmheo.entity.Person;
@@ -48,7 +50,6 @@ public class PersonService {
 
     }
 
-    @Transactional
     public void delete(Long id) {
 
         log.debug("delete person request for id[{}]", id);
@@ -63,4 +64,19 @@ public class PersonService {
         log.debug("delete person response for id[{}]");
 
     }
+
+    public Page<Person> list(Integer page, Integer size) {
+
+        log.debug("list person request for page[{}], size[{}]", page, size);
+
+        PageRequest pageRequest = new PageRequest(page, size);
+
+        Page<Person> personList = personRepository.findAll(pageRequest);
+
+        log.debug("list person response for page[{}], size[{}]", page, size, personList);
+
+        return personList;
+
+    }
+
 }

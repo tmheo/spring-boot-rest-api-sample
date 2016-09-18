@@ -29,8 +29,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -233,6 +232,36 @@ public class ApiDocumentation {
                                 requestHeaders(commonHeaders),
                                 pathParameters(
                                         parameterWithName("id").description("The id of the person")
+                                )
+                        )
+                );
+
+    }
+
+    @Test
+    public void personListExample() throws Exception {
+
+        this.mockMvc.perform(
+                get("/api/person?page=0&size=10")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer your_oauth2_jwt_token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("totalElements", notNullValue()))
+                .andDo(document("person-list-example",
+                                requestHeaders(commonHeaders),
+                                requestParameters(
+                                        parameterWithName("page").description("The page of the person list. starts with zero"),
+                                        parameterWithName("size").description("The size of the page")
+                                ),
+                                responseFields(
+                                        fieldWithPath("totalElements").description("The total elements of the person"),
+                                        fieldWithPath("totalPages").description("The total pages of the person list"),
+                                        fieldWithPath("numberOfElements").description("The number of elements in the current page"),
+                                        fieldWithPath("list.[]").description("The list of the person"),
+                                        fieldWithPath("list.[].id").description("The id of the person"),
+                                        fieldWithPath("list.[].firstName").description("The first name of the person"),
+                                        fieldWithPath("list.[].lastName").description("The last name of the person"),
+                                        fieldWithPath("list.[].email").description("The email of the person")
                                 )
                         )
                 );
