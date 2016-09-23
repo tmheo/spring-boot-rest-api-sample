@@ -18,8 +18,8 @@ import java.util.List;
 /**
  * Created by taemyung on 2016. 9. 10..
  */
-@Configuration
 @EnableSwagger2
+@Configuration
 public class SwaggerConfiguration {
 
     public static final String securitySchemaOAuth2 = "oauth2schema";

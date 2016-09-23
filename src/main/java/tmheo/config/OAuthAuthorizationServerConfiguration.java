@@ -43,7 +43,7 @@ public class OAuthAuthorizationServerConfiguration extends AuthorizationServerCo
                 .withClient("gog")
                 .secret("test")
                 .authorities("ROLE_TRUSTED_CLIENT")
-                .authorizedGrantTypes("implicit", "authorization_code", "refresh_token", "password")
+                .authorizedGrantTypes("implicit", "authorization_code", "refresh_token", "password", "client_credentials")
                 .accessTokenValiditySeconds(3600)
                 .scopes("global")
                 .autoApprove(true);
