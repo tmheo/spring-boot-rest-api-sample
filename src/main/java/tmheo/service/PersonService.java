@@ -2,6 +2,7 @@ package tmheo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ public class PersonService {
 
     }
 
+    @Cacheable("person")
     public Person get(Long id) {
 
         log.debug("get person request for id[{}]", id);
