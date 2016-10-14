@@ -67,6 +67,7 @@ public class PersonService {
 
     }
 
+    @Cacheable("personList")
     public Page<Person> list(Integer page, Integer size) {
 
         log.debug("list person request for page[{}], size[{}]", page, size);
