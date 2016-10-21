@@ -1,6 +1,9 @@
 package tmheo;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jasypt.encryption.StringEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
+import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,6 +45,23 @@ public class DemoApplication {
         log.debug("caffeine cache manager initialized");
 
         return cacheManager;
+    }
+
+    @Bean
+    public StringEncryptor jasyptStringEncryptor() {
+        SimpleStringPBEConfig config = new SimpleStringPBEConfig();
+        config.setPassword("mysecret");
+        config.setAlgorithm("PBEWithMD5AndDES");
+        config.setKeyObtentionIterations("1000");
+        config.setPoolSize("1");
+        config.setProviderName("SunJCE");
+        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
+        config.setStringOutputType("base64");
+
+        PooledPBEStringEncryptor pooledPBEStringEncryptor = new PooledPBEStringEncryptor();
+        pooledPBEStringEncryptor.setConfig(config);
+
+        return pooledPBEStringEncryptor;
     }
 
 }
